@@ -1,0 +1,7 @@
+TXTfolder/
+eicar/
+venv/
+*.env
+.env
+.env*
+*.env*
