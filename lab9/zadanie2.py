@@ -16,7 +16,7 @@ payload = {
   "lang": ["eng"],
   "startSourceRankPercentile": 0,
   "endSourceRankPercentile": 30,
-  "articlesCount": 1,
+  "articlesCount": 10,
   "articlesSortBy": "rel",
   "includeArticleConcepts": True,
   "includeArticleCategories": True,
@@ -34,13 +34,10 @@ if response.status_code == 200:
     data = response.json()
     articles = data["articles"]["results"]
 
-    first = articles[0]
-
-    print(first["title"])
-    print(first["source"])
-    print(first["body"])
-    print(first["date"])
-    print(first["url"])
+    for artical in articles:
+      print(artical["title"])
+      print(artical["source"]["title"])
+      print(artical["url"])
 
 else:
     print("Błąd:", response.status_code)
