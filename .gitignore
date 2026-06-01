@@ -9,3 +9,6 @@ venv/
 *.jpg*
 .jpg
 .jpg*
+*.pem
+*.sig
+lab11/*.txt
