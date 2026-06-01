@@ -19,6 +19,8 @@ print("KEY:")
 print(key)
 try:
     with open(path, "wb") as file:
+        file.write(nonce)
+        file.write(tag)
         file.write(ciphertext)
 except:
     print("canot write to file")
