@@ -1,6 +1,6 @@
 import requests
 
-payloads = ["1", "'", '"']
+payloads = ["1", "'", '"', "--", "'("]
 
 for payload in payloads:
     r = requests.get(
