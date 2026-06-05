@@ -1,4 +1,7 @@
 import requests
+s = requests.Session()
+
+s.get("http://localhost/DVWA/login.php")
 
 payloads = ["1", "'", '"', "--", "'("]
 
